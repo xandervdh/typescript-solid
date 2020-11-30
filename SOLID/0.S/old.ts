@@ -9,7 +9,7 @@ class Car {
 
     //By changing this variable to readonly I have in essence created a property constant.
     // the only subtle difference is that you can write once to the variable inside the constructor
-    private readonly MAXIMUM_FUEL_CAPACITY: number;
+    protected readonly MAXIMUM_FUEL_CAPACITY: number;
     private readonly FUEL_MILEAGE: number = 10;
 
     constructor(MAXIMUM_FUEL_CAPACITY: number) {
