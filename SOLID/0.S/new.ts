@@ -1,42 +1,59 @@
 class Car {
+    private _engine;
+    constructor(MAXIMUM_FUEL_CAPACITY: number) {
+        this._engine = new Engine(MAXIMUM_FUEL_CAPACITY);
+    }
     //it is convention to start property names in TypeScript with an underscore.
     // If you want to known why, remove the underscore and see if your compiler is throwing you an error!
-    private _musicLevel : number = 0;
-    private _oldMusicLevel : number = 50;
-    private _fuel : number = 0;
-    private _miles : number = 0;
-    private _engineStatus: boolean = false;
+    protected _miles : number = 0;
 
     //By changing this variable to readonly I have in essence created a property constant.
     // the only subtle difference is that you can write once to the variable inside the constructor
-    private readonly MAXIMUM_FUEL_CAPACITY: number;
-    private readonly FUEL_MILEAGE: number = 10;
-
-    constructor(MAXIMUM_FUEL_CAPACITY: number) {
-        this.MAXIMUM_FUEL_CAPACITY = MAXIMUM_FUEL_CAPACITY;
-    }
+    protected readonly FUEL_MILEAGE: number = 10;
 
     get miles(): number {
         return this._miles;
     }
 
+    get engine(): Engine {
+        return this._engine
+    }
+}
+
+class MusicPlayer {
+    //it is convention to start property names in TypeScript with an underscore.
+    // If you want to known why, remove the underscore and see if your compiler is throwing you an error!
+    private _Level : number = 0;
+    private _oldLevel : number = 50;
+
 //Take attention to these getter and setters
-    get musicLevel(): number {
-        return this._musicLevel;
+    get Level(): number {
+        return this._Level;
     }
 
-    set musicLevel(value: number) {
-        this._musicLevel = value;
-        this._oldMusicLevel = value;
+    set Level(value: number) {
+        this._Level = value;
+        this._oldLevel = value;
     }
 
     turnMusicOn() {
-        this._musicLevel = this._oldMusicLevel;
+        this._Level = this._oldLevel;
     }
 
     turnMusicOff() {
-        this._musicLevel = 0;
+        this._Level = 0;
     }
+}
+
+class Engine extends Car {
+    //it is convention to start property names in TypeScript with an underscore.
+    // If you want to known why, remove the underscore and see if your compiler is throwing you an error!
+    private _fuel : number = 0;
+    private _engineStatus: boolean = false;
+
+    //By changing this variable to readonly I have in essence created a property constant.
+    // the only subtle difference is that you can write once to the variable inside the constructor
+    private readonly MAXIMUM_FUEL_CAPACITY: number;
 
     get fuel(): number {
         return this._fuel;
@@ -88,56 +105,57 @@ const milesElement = <HTMLElement>document.querySelector('#miles-value');
 const audioElement = <HTMLAudioElement>document.querySelector('#car-music');
 
 let car = new Car(100);
+let musicPlayer = new MusicPlayer();
 
 musicToggleElement.addEventListener('click', () => {
-    if(car.musicLevel === 0) {
-        car.turnMusicOn();
-        musicSliderElement.value = car.musicLevel.toString();
+    if(musicPlayer.Level === 0) {
+        musicPlayer.turnMusicOn();
+        musicSliderElement.value = musicPlayer.Level.toString();
         musicToggleElement.innerText = 'Turn music off';
         return;
     }
     musicToggleElement.innerText = 'Turn music on';
-    car.turnMusicOff();
+    musicPlayer.turnMusicOff();
 });
 
 //I use input instead of change, because then the value changes when I move the mouse, not only on release
 musicSliderElement.addEventListener('input', (event) => {
     let target = <HTMLFormElement>(event.target);
 
-    car.musicLevel = target.value;
-    audioElement.volume = car.musicLevel / 100;
+    musicPlayer.Level = target.value;
+    audioElement.volume = musicPlayer.Level / 100;
 
     //@todo when you are repeating the same text over and over again maybe we should have made some constants for it? Can you do improve on this?
-    musicToggleElement.innerText = car.musicLevel ? 'Turn music off' : 'Turn music on';
+    musicToggleElement.innerText = musicPlayer.Level ? 'Turn music off' : 'Turn music on';
 });
 
 engineToggleElement.addEventListener('click', () => {
-    if(car.engineStatus) {
-        car.turnEngineOff();
+    if(car.engine.engineStatus) {
+        car.engine.turnEngineOff();
         engineToggleElement.innerText = 'Turn engine on';
         return;
     }
     engineToggleElement.innerText = 'Turn engine off';
-    car.turnEngineOn();
+    car.engine.turnEngineOn();
 });
 
 addFuelForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
-    car.addFuel(Number(addFuelInput.value));
-    fuelLevelElement.innerText = car.fuel.toString();
+    car.engine.addFuel(Number(addFuelInput.value));
+    fuelLevelElement.innerText = car.engine.fuel.toString();
 });
 
 setInterval(() => {
-    car.drive();
+    car.engine.drive();
 
     //while it looks like both lines below are the same there is a subtle difference (you could put breakpoints here to see the difference):
     // this <cast> will only tell TypeScript that the value is a string, but the actual variable in JS is not changed in any way: it is in reality still a number
     milesElement.innerText = <string><unknown>(car.miles);
     // This .toString() will actually convert the value in JavaScript from an integer to a string
-    fuelLevelElement.innerText = car.fuel.toString();
+    fuelLevelElement.innerText = car.engine.fuel.toString();
 
-    if(car.musicLevel === 0) {
+    if(musicPlayer.Level === 0) {
         audioElement.pause();
     } else {
         audioElement.play();
