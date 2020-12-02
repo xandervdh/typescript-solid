@@ -1,13 +1,19 @@
-interface UserAuth {
+interface PasswordAuth {
     checkPassword(password: string) : boolean;
     resetPassword();
+}
+
+interface GoogleAuth {
     setGoogleToken(token : string);
     checkGoogleLogin(token : string) : boolean;
+}
+
+interface FacebookAuth {
     setFacebookToken(token : string);
     getFacebookLogin(token : string) : boolean;
 }
 
-class User implements UserAuth {
+class User implements GoogleAuth, FacebookAuth, PasswordAuth {
     private _password : string = 'user';
     private _facebookToken : string;
     private _googleToken : string;
@@ -41,27 +47,12 @@ class User implements UserAuth {
 }
 
 //admin cannot use google or facebook token
-class Admin implements UserAuth {
+class Admin implements PasswordAuth {
     private _password : string = 'admin';
 
-    checkGoogleLogin(token: string): boolean {
-        return false;
-    }
 
     checkPassword(password: string): boolean {
         return (password === this._password);
-    }
-
-    getFacebookLogin(token: string): boolean {
-        return false;
-    }
-
-    setFacebookToken() {
-        throw new Error('Function not supported for admins');
-    }
-
-    setGoogleToken() {
-        throw new Error('Function not supported for admins');
     }
 
     resetPassword() {
@@ -69,7 +60,20 @@ class Admin implements UserAuth {
     }
 }
 
-// class GoogleBot implements UserAuth {}
+// goolge bot can only use google token
+class GoolgeBot implements GoogleAuth {
+    private _googleToken : string;
+
+
+    checkGoogleLogin(token) {
+        // return "this will not work";
+        return (token === this._googleToken);
+    }
+
+    setGoogleToken(token : string) {
+        this._googleToken = token;
+    }
+}
 
 const passwordElement = <HTMLInputElement>document.querySelector('#password');
 const typePasswordElement = <HTMLInputElement>document.querySelector('#typePassword');
