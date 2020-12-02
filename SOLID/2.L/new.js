@@ -1,42 +1,61 @@
-var Discount = /** @class */ (function () {
-    function Discount(type, value) {
+var VaribleDiscount = /** @class */ (function () {
+    function VaribleDiscount(value) {
         if (value === void 0) { value = 0; }
-        this._type = type;
+        this._type = "variable";
         this._value = value;
-        if (this._type != 'none' && value <= 0) {
-            throw new Error('You cannot create a ' + this._type + ' discount with a negative value');
+        if (value <= 0) {
+            throw new Error('You cannot create a variable discount with a negative value');
         }
     }
-    Discount.prototype.apply = function (price) {
+    VaribleDiscount.prototype.apply = function (price) {
+        //@todo: instead of using magic values as string in this, it would be a lot better to change them into constant. This would protect us from misspellings. Can you improve this?
+        return (price - (price * this._value / 100));
+    };
+    VaribleDiscount.prototype.showCalculation = function (price) {
+        if (this._type === "variable") {
+            return price + " € -  " + this._value + "%";
+        }
+    };
+    return VaribleDiscount;
+}());
+var FixedDiscount = /** @class */ (function () {
+    function FixedDiscount(value) {
+        if (value === void 0) { value = 0; }
+        this._type = "fixed";
+        this._value = value;
+        if (value <= 0) {
+            throw new Error('You cannot create a fixed discount with a negative value');
+        }
+    }
+    FixedDiscount.prototype.apply = function (price) {
+        //@todo: instead of using magic values as string in this, it would be a lot better to change them into constant. This would protect us from misspellings. Can you improve this?
+        if (this._type === "fixed") {
+            return Math.max(0, price - this._value);
+        }
+    };
+    FixedDiscount.prototype.showCalculation = function (price) {
+        if (this._type === "fixed") {
+            return price + "€ -  " + this._value + "€ (min 0 €)";
+        }
+    };
+    return FixedDiscount;
+}());
+var NoDiscount = /** @class */ (function () {
+    function NoDiscount() {
+        this._type = "none";
+    }
+    NoDiscount.prototype.apply = function (price) {
         //@todo: instead of using magic values as string in this, it would be a lot better to change them into constant. This would protect us from misspellings. Can you improve this?
         if (this._type === "none") {
             return price;
         }
-        else if (this._type === "variable") {
-            return (price - (price * this._value / 100));
-        }
-        else if (this._type === "fixed") {
-            return Math.max(0, price - this._value);
-        }
-        else {
-            throw new Error('Invalid type of discount');
-        }
     };
-    Discount.prototype.showCalculation = function (price) {
+    NoDiscount.prototype.showCalculation = function (price) {
         if (this._type === "none") {
             return "No discount";
         }
-        else if (this._type === "variable") {
-            return price + " € -  " + this._value + "%";
-        }
-        else if (this._type === "fixed") {
-            return price + "€ -  " + this._value + "€ (min 0 €)";
-        }
-        else {
-            throw new Error('Invalid type of discount');
-        }
     };
-    return Discount;
+    return NoDiscount;
 }());
 var Product = /** @class */ (function () {
     function Product(name, price, discount) {
@@ -93,10 +112,10 @@ var shoppingBasket = /** @class */ (function () {
     return shoppingBasket;
 }());
 var cart = new shoppingBasket();
-cart.addProduct(new Product('Chair', 25, new Discount("fixed", 10)));
+cart.addProduct(new Product('Chair', 25, new FixedDiscount(10)));
 //cart.addProduct(new Product('Chair', 25, new Discount("fixed", -10)));
-cart.addProduct(new Product('Table', 50, new Discount("variable", 25)));
-cart.addProduct(new Product('Bed', 100, new Discount("none")));
+cart.addProduct(new Product('Table', 50, new VaribleDiscount(25)));
+cart.addProduct(new Product('Bed', 100, new NoDiscount()));
 var tableElement = document.querySelector('#cart tbody');
 cart.products.forEach(function (product) {
     var tr = document.createElement('tr');
