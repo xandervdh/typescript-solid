@@ -1,3 +1,74 @@
+class Animal {
+    private _name;
+
+    set name(value) {
+        this._name = value;
+    }
+
+    get name() {
+        return this._name;
+    }
+
+    get type() {
+        return 'Animal';
+    }
+}
+
+class Dog extends Animal {
+
+    get type() {
+        return 'Dog';
+    }
+
+    public makeSound() {
+        return 'Woef';
+    }
+}
+
+class Cat extends Animal {
+
+    get type() {
+        return 'Cat';
+    }
+
+    public makeSound() {
+        return 'Miauw';
+    }
+}
+
+class Parrot extends Animal {
+
+    get type() {
+        return 'Parrot';
+    }
+
+    public makeSound() {
+        return "I'm a parrot";
+    }
+}
+
+class Canary extends Animal {
+
+    get type() {
+        return 'Canary';
+    }
+
+    public makeSound() {
+        return "Tweet";
+    }
+}
+
+class Hippo extends Animal {
+
+    get type() {
+        return 'Hippo';
+    }
+
+    public makeSound() {
+        return "Aaaaaaahhhhh";
+    }
+}
+
 class Zoo {
     private _animals : Array<Object> = new Array<Object>();
 
@@ -8,98 +79,14 @@ class Zoo {
     get animals(): Array<Object> {
         return this._animals;
     }
-
-    sound(sound: string, type) {
-        document.querySelector('#target').innerHTML +=(`${type} : ${sound}. <br>`);
-    }
-
 }
+let zoo = new Zoo;
+zoo.addAnimal(new Cat);
+zoo.addAnimal(new Dog);
+zoo.addAnimal(new Parrot);
+zoo.addAnimal(new Canary);
+zoo.addAnimal(new Hippo);
 
-class Dog extends Zoo {
-    private _name;
-
-    set name(value) {
-        this._name = value;
-    }
-
-    get name() {
-        return this._name;
-    }
-
-    get type() {
-        return 'dog';
-    }
-
-    sound(sound, type) {
-        super.sound(sound, type);
-    }
-}
-
-class Cat extends Zoo {
-    private _name;
-
-    set name(value) {
-        this._name = value;
-    }
-
-    get name() {
-        return this._name;
-    }
-
-    get type() {
-        return 'cat';
-    }
-
-    sound(sound, type) {
-        super.sound(sound, type);
-    }
-}
-
-class Parrot extends Zoo {
-    private _name;
-
-    set name(value) {
-        this._name = value;
-    }
-
-    get name() {
-        return this._name;
-    }
-
-    get type() {
-        return 'parrot';
-    }
-
-    sound(sound, type) {
-        super.sound(sound, type);
-    }
-}
-
-class Canary extends Zoo{
-    private _name;
-
-    set name(value) {
-        this._name = value;
-    }
-
-    get name() {
-        return this._name;
-    }
-
-    get type() {
-        return 'canary';
-    }
-
-    sound(sound, type) {
-        super.sound(sound, type);
-    }
-}
-
-let pieterke = new Canary;
-let blackie = new Dog;
-let billie = new Cat;
-let jef = new Parrot;
-pieterke.sound('Tweet', pieterke.type);
-blackie.sound('Woef', blackie.type);
-billie.sound('Miauw', billie.type);
-jef.sound("I'm a pirate", jef.type);
+zoo.animals.forEach((animal) => {
+    document.querySelector('#target').innerHTML += (animal.type + ": " + animal.makeSound() + ".<br>");
+});
